@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Cementerio de los Límites — Astrid Bolívar · UCompensar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noche:#04060d;
+  --noche2:#0a1020;
+  --niebla:#8fa6bd;
+  --hueso:#d8d2bd;
+  --vela:#e8a13d;
+  --espectro:#7be3c0;
+  --sangre:#c0261f;
+  --sello:#8d6cf0;
+  --piedra:#1a2233;
+  --piedra2:#232e46;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--noche);
+  color:var(--hueso);
+  font-family:'Spectral',Georgia,serif;
+  user-select:none;
+}
+h1,h2,h3,.display{font-family:'IM Fell English SC',Georgia,serif;font-weight:400;letter-spacing:.04em}
+
+/* ============ CAPAS DE ESCENA ============ */
+#escena{position:fixed;inset:0;overflow:hidden;
+  background:
+   radial-gradient(1200px 600px at 78% 18%, rgba(120,140,180,.14), transparent 60%),
+   linear-gradient(180deg,#03040a 0%,#070b16 45%,#0b1322 72%,#0d1526 100%);
+}
+/* Luna */
+#luna{position:absolute;top:7%;right:14%;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle at 38% 35%, #f4efdc 0%, #d9d2b6 55%, #b7b096 100%);
+  box-shadow:0 0 60px 24px rgba(216,210,189,.22),0 0 160px 70px rgba(160,170,200,.10);
+}
+#luna::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:
+   radial-gradient(14px 14px at 30% 60%, rgba(90,90,80,.35), transparent 70%),
+   radial-gradient(10px 10px at 62% 32%, rgba(90,90,80,.3), transparent 70%),
+   radial-gradient(20px 20px at 68% 70%, rgba(90,90,80,.25), transparent 70%);
+}
+.nube{position:absolute;height:60px;border-radius:60px;filter:blur(18px);
+  background:rgba(20,28,46,.85);animation:nube linear infinite;}
+@keyframes nube{from{transform:translateX(-30vw)}to{transform:translateX(120vw)}}
+
+/* Colina y suelo */
+#suelo{position:absolute;left:-5%;right:-5%;bottom:0;height:34%;
+  background:radial-gradient(120% 130% at 50% 0%, #101a2e 0%, #0a1120 60%, #060a14 100%);
+  border-radius:50% 50% 0 0 / 26% 26% 0 0;
+  box-shadow:0 -10px 60px rgba(0,0,0,.6) inset;}
+/* Reja del cementerio */
+#reja{position:absolute;left:0;right:0;bottom:30%;height:110px;pointer-events:none;opacity:.85}
+/* Árbol muerto */
+#arbol{position:absolute;left:4%;bottom:26%;width:220px;height:300px;pointer-events:none;opacity:.9;filter:drop-shadow(0 0 14px rgba(0,0,0,.8))}
+
+/* Niebla */
+.niebla{position:absolute;left:-60%;width:220%;height:220px;pointer-events:none;
+  background:radial-gradient(50% 100% at 50% 100%, rgba(143,166,189,.16), transparent 70%);
+  filter:blur(14px);animation:deriva linear infinite;}
+#niebla1{bottom:2%;animation-duration:46s}
+#niebla2{bottom:14%;animation-duration:70s;animation-direction:reverse;opacity:.7}
+#niebla3{bottom:26%;animation-duration:95s;opacity:.5}
+@keyframes deriva{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+
+/* Lluvia y relámpago */
+#lluvia{position:fixed;inset:0;pointer-events:none;z-index:40;mix-blend-mode:screen}
+#flash{position:fixed;inset:0;background:#dfe8ff;opacity:0;pointer-events:none;z-index:45;transition:opacity .08s}
+#vineta{position:fixed;inset:0;pointer-events:none;z-index:46;
+  background:radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%);}
+#grano{position:fixed;inset:0;pointer-events:none;z-index:47;opacity:.05;
+  background-image:repeating-conic-gradient(rgba(255,255,255,.6) 0 .0001%, transparent 0 .0002%);
+  background-size:180px 180px;animation:grano .35s steps(2) infinite;}
+@keyframes grano{to{background-position:60px 30px}}
+
+/* Murciélagos */
+.bat{position:absolute;width:34px;height:16px;pointer-events:none;opacity:.8;
+  animation:vuelo linear forwards;}
+.bat svg{width:100%;height:100%;animation:aleteo .28s ease-in-out infinite alternate;transform-origin:center}
+@keyframes vuelo{from{transform:translate(-8vw, 12vh)}to{transform:translate(110vw,-4vh)}}
+@keyframes aleteo{from{transform:scaleY(.55)}to{transform:scaleY(1.15)}}
+
+/* ============ LÁPIDAS (CRIPTAS) ============ */
+#campo{position:absolute;left:0;right:0;bottom:4%;height:52%;z-index:10;
+  display:grid;grid-template-columns:repeat(3,minmax(160px,240px));
+  justify-content:center;column-gap:5vw;row-gap:26px;align-content:end;padding:0 3vw;}
+.tumba{position:relative;height:150px;border-radius:90px 90px 8px 8px;cursor:pointer;
+  background:linear-gradient(180deg,var(--piedra2),var(--piedra) 70%);
+  border:1px solid #33405e;border-bottom:6px solid #0c1220;
+  box-shadow:0 18px 30px rgba(0,0,0,.55), inset 0 8px 18px rgba(255,255,255,.04);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  transition:transform .25s, box-shadow .25s, filter .25s;
+  text-align:center;padding:14px 12px 10px;}
+.tumba .num{font-size:.72rem;letter-spacing:.3em;color:#7487ab}
+.tumba .nom{font-family:'IM Fell English SC',serif;font-size:1.02rem;line-height:1.15;color:var(--hueso)}
+.tumba .estado{font-size:.72rem;color:#7487ab;font-style:italic}
+.tumba::before{content:"";position:absolute;left:12%;right:12%;top:26px;height:1px;background:linear-gradient(90deg,transparent,#4a5a80,transparent)}
+.tumba::after{content:"✟";position:absolute;top:6px;font-size:14px;color:#5c6d92}
+.tumba:hover{transform:translateY(-6px)}
+.tumba.abierta:hover{box-shadow:0 22px 40px rgba(0,0,0,.6),0 0 26px rgba(123,227,192,.25);filter:brightness(1.15)}
+.tumba.bloqueada{cursor:not-allowed;filter:brightness(.55) saturate(.5)}
+.tumba.bloqueada .estado::before{content:"⛓ "}
+.tumba.liberada{border-color:rgba(123,227,192,.5);box-shadow:0 18px 30px rgba(0,0,0,.55),0 0 30px rgba(123,227,192,.28)}
+.tumba.liberada .estado{color:var(--espectro);font-style:normal}
+.tumba .alma{position:absolute;top:-26px;font-size:22px;opacity:0;transition:opacity .6s, transform 1.2s}
+.tumba.liberada .alma{opacity:.95;transform:translateY(-8px);animation:flota 3s ease-in-out infinite alternate}
+@keyframes flota{from{transform:translateY(-4px)}to{transform:translateY(-16px)}}
+
+#mausoleo{grid-column:2;height:190px;border-radius:14px 14px 8px 8px;
+  background:linear-gradient(180deg,#2a2340,#161226 70%);border-color:#4a3d78;}
+#mausoleo .nom{font-size:1.2rem;color:#cabfff}
+#mausoleo::after{content:"◆";color:var(--sello)}
+#mausoleo.abierta{box-shadow:0 18px 30px rgba(0,0,0,.55),0 0 36px rgba(141,108,240,.45);animation:latido 2.2s ease-in-out infinite}
+@keyframes latido{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
+
+/* ============ HUD ============ */
+#hud{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:18px;
+  padding:12px 18px;background:linear-gradient(180deg,rgba(3,5,10,.85),transparent);}
+#hud .titulo{font-family:'IM Fell English SC',serif;font-size:1.05rem;color:var(--hueso);text-shadow:0 0 14px rgba(232,161,61,.35)}
+.medidor{flex:0 0 220px}
+.medidor label{font-size:.68rem;letter-spacing:.22em;color:#94a6c6;text-transform:uppercase}
+.barra{height:10px;border-radius:6px;background:#101827;border:1px solid #2c3a58;overflow:hidden;margin-top:4px}
+.barra>div{height:100%;width:100%;border-radius:6px;transition:width .5s;
+  background:linear-gradient(90deg,#5f1a16,var(--sangre) 40%,#e8643d)}
+#almasHud{font-size:.85rem;color:var(--espectro);letter-spacing:.1em}
+#hud .sep{flex:1}
+.btnIco{background:rgba(16,24,39,.8);border:1px solid #2c3a58;color:var(--hueso);
+  font-family:'Spectral',serif;font-size:.8rem;padding:7px 14px;border-radius:8px;cursor:pointer;transition:.2s}
+.btnIco:hover{border-color:var(--vela);color:var(--vela)}
+#autorMapa{position:fixed;bottom:8px;left:0;right:0;text-align:center;z-index:60;
+  font-size:.7rem;letter-spacing:.18em;color:#6c7ea3;text-transform:uppercase;pointer-events:none}
+
+/* ============ PANTALLAS (intro / final / muerte) ============ */
+.pantalla{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(90% 90% at 50% 30%, rgba(10,16,32,.92), rgba(3,4,9,.98));
+  backdrop-filter:blur(3px);padding:24px;overflow:auto}
+.tarjeta{max-width:680px;width:100%;text-align:center;padding:42px 36px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(20,27,44,.92),rgba(10,14,26,.95));
+  border:1px solid #34426a;box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(141,108,240,.08) inset}
+.tarjeta h1{font-size:clamp(1.9rem,4.6vw,3.1rem);color:var(--hueso);
+  text-shadow:0 0 22px rgba(232,161,61,.35);margin-bottom:6px;animation:parpadeoTitulo 6s infinite}
+@keyframes parpadeoTitulo{0%,92%,96%,100%{opacity:1}94%{opacity:.55}}
+.tarjeta .sub{color:#9db0d2;font-style:italic;margin-bottom:22px}
+.tarjeta p{line-height:1.65;color:#c3cbdd;margin-bottom:14px;font-size:1.02rem}
+.tarjeta .regla{display:flex;gap:14px;text-align:left;margin:10px auto;max-width:520px;align-items:flex-start}
+.tarjeta .regla .ic{flex:0 0 26px;text-align:center;color:var(--vela)}
+.btnPrincipal{margin-top:22px;font-family:'IM Fell English SC',serif;font-size:1.15rem;letter-spacing:.12em;
+  color:#0a0d16;background:linear-gradient(180deg,#f0c060,var(--vela));border:none;border-radius:10px;
+  padding:15px 42px;cursor:pointer;box-shadow:0 0 34px rgba(232,161,61,.35);transition:.25s}
+.btnPrincipal:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(232,161,61,.55)}
+.btnFantasma{margin-top:12px;background:transparent;border:1px solid #3a4a70;color:#9db0d2;
+  border-radius:10px;padding:11px 30px;cursor:pointer;font-family:'Spectral',serif;transition:.2s}
+.btnFantasma:hover{border-color:var(--espectro);color:var(--espectro)}
+.autor{margin-top:26px;font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:#8a9bc0}
+.autor b{color:var(--vela);font-weight:600}
+
+/* ============ RETO ============ */
+#reto{display:none}
+#reto.activo{display:flex}
+.pergamino{max-width:760px;width:100%;border-radius:12px;overflow:hidden;
+  border:1px solid #3a4a70;box-shadow:0 40px 90px rgba(0,0,0,.75);
+  background:linear-gradient(180deg,#121a2d,#0b1120)}
+.pergamino header{padding:16px 26px;border-bottom:1px solid #26334f;
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  background:linear-gradient(90deg,rgba(141,108,240,.10),transparent)}
+.pergamino header h2{font-size:1.15rem;color:#cabfff}
+.pergamino header .sello{font-size:.75rem;letter-spacing:.2em;color:#8a9bc0;text-transform:uppercase}
+.enunciado{padding:26px;text-align:center}
+.enunciado .contexto{font-style:italic;color:#9db0d2;margin-bottom:18px;font-size:.95rem}
+.mate{font-size:1.5rem;color:var(--hueso);display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.mlim{display:inline-flex;flex-direction:column;line-height:1;align-items:center;font-style:italic}
+.mlim small{font-size:.62em;margin-top:2px;font-style:normal;color:#a9b8d8}
+.mfrac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;line-height:1.25}
+.mfrac>span:first-child{border-bottom:2px solid var(--hueso);padding:0 8px 3px}
+.mfrac>span:last-child{padding:3px 8px 0}
+.opciones{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 26px 26px}
+.opc{background:#111a2e;border:1px solid #2c3a58;border-radius:10px;padding:16px 12px;cursor:pointer;
+  font-family:'Spectral',serif;color:var(--hueso);font-size:1.1rem;transition:.18s;text-align:center}
+.opc:hover{border-color:var(--vela);background:#16223c;transform:translateY(-2px)}
+.opc.ok{border-color:var(--espectro);background:rgba(123,227,192,.12);box-shadow:0 0 22px rgba(123,227,192,.25)}
+.opc.mal{border-color:var(--sangre);background:rgba(192,38,31,.14);animation:tiembla .35s}
+.opc:disabled{cursor:default;transform:none}
+@keyframes tiembla{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.veredicto{margin:0 26px 22px;border-radius:10px;padding:16px 18px;display:none;text-align:left;line-height:1.55;font-size:.96rem}
+.veredicto.ok{display:block;background:rgba(123,227,192,.08);border:1px solid rgba(123,227,192,.4);color:#c8f2e2}
+.veredicto.mal{display:block;background:rgba(192,38,31,.10);border:1px solid rgba(192,38,31,.5);color:#f2c9c6}
+.veredicto b{color:var(--vela)}
+.pieReto{display:flex;justify-content:space-between;align-items:center;padding:0 26px 22px}
+.pieReto .progresoSellos{font-size:.8rem;letter-spacing:.16em;color:#8a9bc0;text-transform:uppercase}
+#btnSeguir{display:none}
+
+/* Grimorio */
+#grimorio .tarjeta{max-width:640px;text-align:left}
+#grimorio h1{font-size:1.7rem;text-align:center}
+#grimorio .gsec{margin:14px 0;padding:12px 16px;border:1px solid #2c3a58;border-radius:10px;background:#101827}
+#grimorio .gsec h3{color:var(--vela);font-size:1rem;margin-bottom:6px}
+#grimorio .gsec p{font-size:.92rem;margin-bottom:4px;color:#c3cbdd}
+
+/* Rango final */
+.rango{display:inline-block;margin:12px 0 4px;padding:10px 26px;border-radius:10px;
+  font-family:'IM Fell English SC',serif;font-size:1.35rem;letter-spacing:.08em;
+  border:1px solid var(--espectro);color:var(--espectro);box-shadow:0 0 30px rgba(123,227,192,.25)}
+.stats{display:flex;justify-content:center;gap:26px;margin:16px 0;flex-wrap:wrap}
+.stat{min-width:110px}
+.stat .v{font-size:1.9rem;font-family:'IM Fell English SC',serif;color:var(--hueso)}
+.stat .k{font-size:.7rem;letter-spacing:.2em;color:#8a9bc0;text-transform:uppercase}
+
+/* Sacudida y daño */
+body.golpe #escena, body.golpe .pergamino{animation:golpe .45s}
+@keyframes golpe{0%,100%{transform:translate(0,0)}20%{transform:translate(-10px,4px)}40%{transform:translate(9px,-5px)}60%{transform:translate(-7px,3px)}80%{transform:translate(5px,-2px)}}
+#danio{position:fixed;inset:0;z-index:70;pointer-events:none;opacity:0;transition:opacity .5s;
+  background:radial-gradient(90% 90% at 50% 50%, transparent 55%, rgba(160,10,10,.45) 100%)}
+
+.oculto{display:none!important}
+@media (max-width:760px){
+  #campo{grid-template-columns:repeat(2,minmax(140px,1fr));column-gap:5vw;height:60%}
+  #mausoleo{grid-column:1 / -1}
+  .opciones{grid-template-columns:1fr}
+  .medidor{flex:0 0 150px}
+  #luna{width:80px;height:80px;right:8%}
+  #arbol{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .nube,.niebla,.bat,#grano{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= ESCENA ================= -->
+<div id="escena">
+  <div id="luna"></div>
+  <div class="nube" style="top:9%;width:340px;animation-duration:80s"></div>
+  <div class="nube" style="top:16%;width:460px;animation-duration:120s;animation-delay:-40s"></div>
+  <div class="nube" style="top:5%;width:260px;animation-duration:95s;animation-delay:-70s;opacity:.8"></div>
+
+  <svg id="arbol" viewBox="0 0 220 300">
+    <path d="M110 300 L104 210 C 100 170 92 150 70 130 C 55 116 40 108 28 88 M104 210 C 106 168 118 150 142 132 C 160 118 176 104 184 82 M100 190 C 84 176 70 172 52 166 M112 176 C 130 160 146 156 166 144 M106 236 L 96 232 M108 250 L120 246"
+      fill="none" stroke="#0c1220" stroke-width="14" stroke-linecap="round"/>
+    <path d="M110 300 L104 210 C 100 170 92 150 70 130 M104 210 C 106 168 118 150 142 132"
+      fill="none" stroke="#151d30" stroke-width="7" stroke-linecap="round"/>
+  </svg>
+
+  <div id="suelo"></div>
+
+  <svg id="reja" viewBox="0 0 1200 110" preserveAspectRatio="none">
+    <g stroke="#0e1524" stroke-width="6">
+      <line x1="0" y1="96" x2="1200" y2="96"/>
+      <line x1="0" y1="34" x2="1200" y2="34"/>
+    </g>
+    <g stroke="#101a2c" stroke-width="4">
+      <!-- barrotes generados por JS -->
+      <g id="barrotes"></g>
+    </g>
+  </svg>
+
+  <div id="campo"></div>
+
+  <div class="niebla" id="niebla1"></div>
+  <div class="niebla" id="niebla2"></div>
+  <div class="niebla" id="niebla3"></div>
+</div>
+
+<canvas id="lluvia"></canvas>
+<div id="flash"></div>
+<div id="danio"></div>
+<div id="vineta"></div>
+<div id="grano"></div>
+
+<!-- ================= HUD ================= -->
+<div id="hud" class="oculto">
+  <span class="titulo">☾ El Cementerio de los Límites</span>
+  <div class="medidor">
+    <label>Cordura</label>
+    <div class="barra"><div id="barraCordura"></div></div>
+  </div>
+  <span id="almasHud">✦ Almas liberadas: 0 / 6</span>
+  <span class="sep"></span>
+  <button class="btnIco" id="btnGrimorio">📖 Grimorio</button>
+  <button class="btnIco" id="btnSonido">🔊 Sonido</button>
+</div>
+<div id="autorMapa" class="oculto">Creado por Astrid Bolívar · Ciencias Básicas · UCompensar</div>
+
+<!-- ================= INTRO ================= -->
+<div class="pantalla" id="intro">
+  <div class="tarjeta">
+    <h1>El Cementerio de los Límites</h1>
+    <div class="sub">— Donde las funciones vienen a morir… y solo el cálculo puede liberarlas —</div>
+    <p>La medianoche cayó sobre el camposanto. Seis almas de antiguos matemáticos quedaron atrapadas
+    en sus criptas, selladas por límites sin resolver. Al fondo, el <b style="color:#cabfff">Mausoleo del Infinito</b>
+    aguarda a quien libere a las seis.</p>
+    <div class="regla"><span class="ic">🕯️</span><span>Cada cripta guarda <b>dos sellos</b>: resuelve ambos límites para liberar su alma.</span></div>
+    <div class="regla"><span class="ic">🩸</span><span>Cada error drena tu <b>cordura</b>. Si llega a cero, el cementerio te reclama.</span></div>
+    <div class="regla"><span class="ic">📖</span><span>El <b>Grimorio</b> contiene los resultados esenciales. Consúltalo antes de responder al azar.</span></div>
+    <div class="regla"><span class="ic">♾️</span><span>Enfrentarás límites por sustitución, laterales, indeterminaciones 0/0, trigonométricos, al infinito e infinitos.</span></div>
+    <button class="btnPrincipal" id="btnEntrar">⚰ Entrar al cementerio</button>
+    <div class="autor">Creado por <b>Astrid Bolívar</b> · Ciencias Básicas · UCompensar</div>
+  </div>
+</div>
+
+<!-- ================= RETO ================= -->
+<div class="pantalla" id="reto">
+  <div class="pergamino">
+    <header>
+      <h2 id="retoTitulo"></h2>
+      <span class="sello" id="retoSello"></span>
+    </header>
+    <div class="enunciado">
+      <div class="contexto" id="retoContexto"></div>
+      <div class="mate" id="retoMate"></div>
+    </div>
+    <div class="opciones" id="retoOpciones"></div>
+    <div class="veredicto" id="veredicto"></div>
+    <div class="pieReto">
+      <span class="progresoSellos" id="progresoSellos"></span>
+      <span>
+        <button class="btnIco" id="btnHuir">Huir de la cripta</button>
+        <button class="btnIco" id="btnSeguir">Continuar ➤</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= GRIMORIO ================= -->
+<div class="pantalla oculto" id="grimorio">
+  <div class="tarjeta">
+    <h1>📖 Grimorio de los Límites</h1>
+    <div class="gsec"><h3>Sustitución directa</h3>
+      <p>Si f es continua en a (polinomios y racionales con denominador no nulo), entonces lím<sub>x→a</sub> f(x) = f(a).</p></div>
+    <div class="gsec"><h3>Límites laterales</h3>
+      <p>El límite existe ⇔ lím<sub>x→a⁻</sub> f(x) = lím<sub>x→a⁺</sub> f(x). Si difieren, el límite <b>no existe</b>. Nunca se promedian.</p></div>
+    <div class="gsec"><h3>Indeterminación 0/0</h3>
+      <p>0/0 no vale 0, ni 1, ni implica inexistencia: exige transformar la expresión (factorizar, racionalizar con el conjugado, simplificar) y volver a evaluar.</p></div>
+    <div class="gsec"><h3>Límites trigonométricos notables</h3>
+      <p>lím<sub>x→0</sub> sen(kx)/(kx) = 1 &nbsp;·&nbsp; lím<sub>x→0</sub> (1−cos x)/x = 0 &nbsp;·&nbsp; lím<sub>x→0</sub> (1−cos x)/x² = 1/2.</p></div>
+    <div class="gsec"><h3>Límites al infinito (racionales)</h3>
+      <p>Comparar grados: numerador de menor grado → 0; grados iguales → cociente de coeficientes principales; numerador de mayor grado → ±∞. Cuidado: √(x²) = |x| = −x si x&lt;0.</p></div>
+    <div class="gsec"><h3>Límites infinitos</h3>
+      <p>Si el denominador tiende a 0 sin que el numerador se anule, la función crece sin cota: analiza el <b>signo</b> por cada lado para decidir entre +∞ y −∞ (asíntota vertical).</p></div>
+    <button class="btnFantasma" id="btnCerrarGrimorio">Cerrar el grimorio</button>
+  </div>
+</div>
+
+<!-- ================= MUERTE ================= -->
+<div class="pantalla oculto" id="muerte">
+  <div class="tarjeta">
+    <h1 style="color:#e88a84">La niebla te reclamó</h1>
+    <div class="sub">Tu cordura se agotó entre las lápidas…</div>
+    <p>Los errores repetidos son señales: revisa el <b>Grimorio</b>, identifica qué tipo de límite te venció
+    y vuelve a intentarlo. En el cementerio, quien comprende la indeterminación… sobrevive.</p>
+    <div class="stats">
+      <div class="stat"><div class="v" id="mAciertos">0</div><div class="k">Aciertos</div></div>
+      <div class="stat"><div class="v" id="mErrores">0</div><div class="k">Errores</div></div>
+      <div class="stat"><div class="v" id="mAlmas">0</div><div class="k">Almas</div></div>
+    </div>
+    <button class="btnPrincipal" id="btnRevivir">☠ Levantarte de la tumba</button>
+    <div class="autor">Creado por <b>Astrid Bolívar</b> · Ciencias Básicas · UCompensar</div>
+  </div>
+</div>
+
+<!-- ================= FINAL ================= -->
+<div class="pantalla oculto" id="final">
+  <div class="tarjeta">
+    <h1>El amanecer rompe la maldición</h1>
+    <div class="sub">Las seis almas ascienden y el Guardián del Infinito se inclina ante ti.</div>
+    <div class="rango" id="rangoFinal"></div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="fAciertos">0</div><div class="k">Aciertos</div></div>
+      <div class="stat"><div class="v" id="fErrores">0</div><div class="k">Errores</div></div>
+      <div class="stat"><div class="v" id="fCordura">0%</div><div class="k">Cordura final</div></div>
+    </div>
+    <p id="mensajeFinal"></p>
+    <button class="btnPrincipal" id="btnOtraVez">☾ Recorrer el cementerio de nuevo</button>
+    <div class="autor">Creado por <b>Astrid Bolívar</b> · Ciencias Básicas · UCompensar</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================
+   EL CEMENTERIO DE LOS LÍMITES
+   Creado por Astrid Bolívar · Ciencias Básicas · UCompensar
+   ========================================================= */
+
+/* ---------- utilidades de notación matemática ---------- */
+const lim = (a) => `<span class="mlim">lím<small>${a}</small></span>`;
+const frac = (n,d) => `<span class="mfrac"><span>${n}</span><span>${d}</span></span>`;
+const R2 = "&#8730;"; // raíz
+
+/* ---------- banco de criptas y sellos ---------- */
+const CRIPTAS = [
+{
+ nombre:"Cripta de la Sustitución",
+ tema:"Sustitución directa",
+ preguntas:[
+  { contexto:"La primera lápida cruje. Un susurro exige el valor exacto…",
+    mate:`${lim("x→3")} (x² − 2x + 1) =`,
+    ops:[
+     {t:"4", ok:true, fb:"<b>Correcto.</b> Los polinomios son continuos en todo ℝ: basta sustituir. (3)² − 2(3) + 1 = 9 − 6 + 1 = 4. Nota que x² − 2x + 1 = (x − 1)², de modo que el límite es (3 − 1)² = 4."},
+     {t:"16", fb:"Ese valor proviene de factorizar con signo equivocado: x² − 2x + 1 = (x − 1)², no (x + 1)². Con (3 + 1)² obtienes 16, pero el binomio correcto da (3 − 1)² = 4."},
+     {t:"2", fb:"Error aritmético en el término independiente: 9 − 6 − 1 = 2. El polinomio suma +1, así que 9 − 6 + 1 = 4."},
+     {t:"No existe", fb:"Un polinomio es continuo en todos los reales; su límite <b>siempre existe</b> y coincide con la evaluación directa: 4."}
+    ]},
+  { contexto:"El segundo sello brilla en la piedra: una función racional bien definida…",
+    mate:`${lim("x→−2")} ${frac("x³ + 1","x − 1")} =`,
+    ops:[
+     {t:"7/3", ok:true, fb:"<b>Correcto.</b> El denominador no se anula en x = −2, así que hay continuidad: ((−2)³ + 1)/(−2 − 1) = (−8 + 1)/(−3) = (−7)/(−3) = 7/3."},
+     {t:"−7/3", fb:"Error de signo en el denominador: −2 − 1 = −3, también negativo. Negativo entre negativo es <b>positivo</b>: (−7)/(−3) = 7/3."},
+     {t:"−3", fb:"Ese valor surge de calcular (−2)³ = +8: (8 + 1)/(−3) = −3. El cubo <b>conserva el signo</b>: (−2)³ = −8, y el límite vale 7/3."},
+     {t:"No existe", fb:"El límite de una función racional solo está en riesgo donde el denominador se anula (x = 1). En x = −2 hay continuidad y el límite existe: 7/3."}
+    ]}
+ ]},
+{
+ nombre:"Cripta de los Laterales",
+ tema:"Límites laterales",
+ preguntas:[
+  { contexto:"Dos espectros tiran de ti en direcciones opuestas. La función es a trozos:  f(x) = x + 1 si x < 2;  f(x) = x² si x ≥ 2.",
+    mate:`${lim("x→2")} f(x) =`,
+    ops:[
+     {t:"No existe", ok:true, fb:"<b>Correcto.</b> Por la izquierda: lím x→2⁻ (x + 1) = 3. Por la derecha: lím x→2⁺ x² = 4. Como 3 ≠ 4, los laterales difieren y el límite <b>no existe</b>."},
+     {t:"3", fb:"Ese es solo el límite lateral <b>izquierdo</b>. El límite global exige que ambos laterales coincidan, y por la derecha vale 4."},
+     {t:"4", fb:"Ese es solo el límite lateral <b>derecho</b> (y f(2) = 4, pero el valor de la función en el punto no decide el límite). Por la izquierda vale 3: los laterales difieren."},
+     {t:"3.5", fb:"Error clásico: el límite <b>no se promedia</b>. Si los laterales difieren (3 y 4), el límite simplemente no existe."}
+    ]},
+  { contexto:"Una figura sin rostro te muestra un espejo roto: la función signo disfrazada…",
+    mate:`${lim("x→0")} ${frac("|x|","x")} =`,
+    ops:[
+     {t:"No existe", ok:true, fb:"<b>Correcto.</b> Para x > 0, |x|/x = 1; para x < 0, |x|/x = −1. Los laterales valen 1 y −1: al ser distintos, el límite no existe. Es la función signo, con salto en el origen."},
+     {t:"0", fb:"Sustituir da |0|/0 = 0/0, que es una <b>indeterminación</b>, no cero. Aquí la indeterminación se resuelve por laterales, y estos difieren."},
+     {t:"1", fb:"Ese es únicamente el límite por la <b>derecha</b> (x > 0 ⇒ |x| = x). Por la izquierda la fracción vale −1."},
+     {t:"−1", fb:"Ese es únicamente el límite por la <b>izquierda</b> (x < 0 ⇒ |x| = −x). Por la derecha la fracción vale 1."}
+    ]}
+ ]},
+{
+ nombre:"Cripta de la Indeterminación",
+ tema:"Forma 0/0: factorizar y racionalizar",
+ preguntas:[
+  { contexto:"El sello marca 0/0 con hierro al rojo. Solo la factorización lo rompe…",
+    mate:`${lim("x→2")} ${frac("x² − 4","x − 2")} =`,
+    ops:[
+     {t:"4", ok:true, fb:"<b>Correcto.</b> La sustitución da 0/0: hay que factorizar. (x² − 4)/(x − 2) = (x − 2)(x + 2)/(x − 2) = x + 2 para x ≠ 2. El límite es 2 + 2 = 4."},
+     {t:"0", fb:"0/0 <b>no vale 0</b>: es una indeterminación que obliga a transformar la expresión. Tras factorizar y cancelar, el límite es 4."},
+     {t:"1", fb:"0/0 tampoco vale 1 (ese reflejo viene de pensar «algo sobre sí mismo»). La indeterminación se resuelve factorizando: el resultado es 4."},
+     {t:"No existe", fb:"Que la forma sea indeterminada no significa que el límite no exista: la discontinuidad en x = 2 es <b>removible</b> y el límite vale 4."}
+    ]},
+  { contexto:"El segundo sello esconde una raíz. El conjugado es la llave…",
+    mate:`${lim("x→0")} ${frac(R2+"(x + 4) − 2","x")} =`,
+    ops:[
+     {t:"1/4", ok:true, fb:"<b>Correcto.</b> Multiplicando por el conjugado: ((x+4) − 4)/(x(√(x+4) + 2)) = x/(x(√(x+4) + 2)) = 1/(√(x+4) + 2) → 1/(2 + 2) = 1/4."},
+     {t:"0", fb:"La sustitución da (2 − 2)/0 = 0/0, <b>indeterminación</b>, no cero. Racionaliza con el conjugado y obtendrás 1/4."},
+     {t:"1/2", fb:"Ese valor aparece si el denominador final se toma como √(x+4) en lugar de √(x+4) <b>+ 2</b>. El conjugado suma ambos términos: 1/(2 + 2) = 1/4."},
+     {t:"No existe", fb:"La indeterminación 0/0 no implica inexistencia. Tras racionalizar, la expresión es continua en 0 y el límite existe: 1/4."}
+    ]}
+ ]},
+{
+ nombre:"Cripta Trigonométrica",
+ tema:"Límites trigonométricos notables",
+ preguntas:[
+  { contexto:"Campanas fantasmales oscilan como ondas seno. El sello exige el ajuste exacto…",
+    mate:`${lim("x→0")} ${frac("sen(5x)","x")} =`,
+    ops:[
+     {t:"5", ok:true, fb:"<b>Correcto.</b> sen(5x)/x = 5 · sen(5x)/(5x). Como lím u→0 sen(u)/u = 1, el límite es 5 · 1 = 5."},
+     {t:"1", fb:"Aplicaste el límite notable <b>sin compensar</b> el 5: sen(5x)/(5x) → 1, pero aquí el denominador es x, así que falta el factor 5."},
+     {t:"0", fb:"sen(0)/0 es la indeterminación 0/0, no cero. El límite notable resuelve la forma y da 5."},
+     {t:"1/5", fb:"La constante <b>multiplica</b>, no divide: al reescribir sen(5x)/x = 5 · sen(5x)/(5x), el 5 queda como factor, no como divisor."}
+    ]},
+  { contexto:"Un coro susurra «uno menos coseno…». Elige con cuidado el notable correcto…",
+    mate:`${lim("x→0")} ${frac("1 − cos x","x")} =`,
+    ops:[
+     {t:"0", ok:true, fb:"<b>Correcto.</b> Es el segundo límite notable: (1 − cos x)/x → 0. Puede verse multiplicando por el conjugado (1 + cos x): queda sen²x/(x(1+cos x)) = (sen x/x)·(sen x/(1+cos x)) → 1 · 0/2 = 0."},
+     {t:"1", fb:"Confusión con sen(x)/x → 1. El notable del coseno es distinto: (1 − cos x)/x → 0."},
+     {t:"1/2", fb:"1/2 corresponde a (1 − cos x)/<b>x²</b>, con x al cuadrado en el denominador. Con x lineal, el límite es 0."},
+     {t:"No existe", fb:"La forma es 0/0, indeterminada pero resoluble: el límite existe y vale 0."}
+    ]}
+ ]},
+{
+ nombre:"Cripta del Infinito",
+ tema:"Límites cuando x → ±∞",
+ preguntas:[
+  { contexto:"Las lápidas se extienden hasta donde no alcanza la vista. ¿Quién domina cuando x crece sin cota?",
+    mate:`${lim("x→+∞")} ${frac("3x² − 5x","2x² + 1")} =`,
+    ops:[
+     {t:"3/2", ok:true, fb:"<b>Correcto.</b> Grados iguales (2 y 2): el límite es el cociente de los coeficientes principales, 3/2. Formalmente, al dividir todo entre x²: (3 − 5/x)/(2 + 1/x²) → 3/2."},
+     {t:"0", fb:"El límite es 0 solo cuando el grado del numerador es <b>menor</b> que el del denominador. Aquí son iguales: manda el cociente 3/2."},
+     {t:"+∞", fb:"Sería +∞ si el numerador tuviera grado <b>mayor</b>. Con grados iguales, los términos dominantes se equilibran en 3/2."},
+     {t:"3", fb:"Tomaste solo el coeficiente del numerador. En el infinito compiten <b>ambos</b> términos dominantes: 3x²/2x² = 3/2."}
+    ]},
+  { contexto:"Caminas hacia el poniente: x → −∞. La raíz esconde una trampa de signo…",
+    mate:`${lim("x→−∞")} ${frac(R2+"(x² + 1)","x")} =`,
+    ops:[
+     {t:"−1", ok:true, fb:"<b>Correcto.</b> √(x² + 1) = |x|·√(1 + 1/x²). Cuando x → −∞, |x| = <b>−x</b>, así que la fracción tiende a (−x/x)·√(1) = −1."},
+     {t:"1", fb:"La trampa clásica: escribir √(x²) = x. En realidad √(x²) = |x|, y para x negativo |x| = −x. El signo cambia el resultado a −1."},
+     {t:"0", fb:"Numerador y denominador crecen con el mismo orden (grado efectivo 1): el cociente no se apaga, tiende a −1."},
+     {t:"No existe", fb:"El límite hacia −∞ está perfectamente definido: con el análisis de |x| se obtiene −1."}
+    ]}
+ ]},
+{
+ nombre:"Cripta de las Asíntotas",
+ tema:"Límites infinitos (asíntotas verticales)",
+ preguntas:[
+  { contexto:"Un abismo se abre junto a la lápida x = 2. Te acercas por la izquierda…",
+    mate:`${lim("x→2⁻")} ${frac("3","x − 2")} =`,
+    ops:[
+     {t:"−∞", ok:true, fb:"<b>Correcto.</b> Por la izquierda, x − 2 → 0⁻ (números negativos pequeñísimos). Positivo entre negativo diminuto: la función se desploma a −∞. En x = 2 hay asíntota vertical."},
+     {t:"+∞", fb:"Sería +∞ acercándose por la <b>derecha</b> (x − 2 → 0⁺). Por la izquierda el denominador es negativo: el cociente tiende a −∞."},
+     {t:"0", fb:"El que tiende a 0 es el <b>denominador</b>, no la fracción: dividir 3 entre algo diminuto produce valores gigantescos (aquí, negativos)."},
+     {t:"3", fb:"El numerador constante no decide el comportamiento: cerca de la asíntota manda el denominador que se anula. El límite es −∞."}
+    ]},
+  { contexto:"El último sello arde en ambos lados de x = 1. El cuadrado lo cambia todo…",
+    mate:`${lim("x→1")} ${frac("1","(x − 1)²")} =`,
+    ops:[
+     {t:"+∞", ok:true, fb:"<b>Correcto.</b> El cuadrado hace que (x − 1)² > 0 por <b>ambos</b> lados: los dos laterales tienden a +∞, y por eso podemos escribir el límite bilateral como +∞."},
+     {t:"No existe (laterales distintos)", fb:"Aquí los laterales <b>coinciden</b>: el cuadrado vuelve positivo el denominador a ambos lados de 1, así que ambos tienden a +∞. Compáralo con 1/(x−1), donde sí difieren."},
+     {t:"−∞", fb:"El denominador es un cuadrado: nunca es negativo. El cociente es positivo y explota hacia +∞."},
+     {t:"0", fb:"Cerca de x = 1 el denominador se hace diminuto y la fracción, gigantesca: crece sin cota hacia +∞, no se apaga."}
+    ]}
+ ]}
+];
+
+const GUARDIAN = {
+ nombre:"Mausoleo del Infinito",
+ tema:"El Guardián del Infinito — reto final",
+ preguntas:[
+  { contexto:"El Guardián alza su guadaña: «Resuelve mi forma ∞ − ∞… o quédate para siempre».",
+    mate:`${lim("x→+∞")} ( ${R2}(4x² + x) − 2x ) =`,
+    ops:[
+     {t:"1/4", ok:true, fb:"<b>Correcto.</b> ∞ − ∞ es indeterminación: multiplica por el conjugado. Queda x/(√(4x²+x) + 2x) = 1/(√(4 + 1/x) + 2) → 1/(2 + 2) = 1/4."},
+     {t:"0", fb:"∞ − ∞ <b>no es 0</b>: es indeterminación. Al racionalizar, el numerador queda x (no se cancela todo) y el límite es 1/4."},
+     {t:"+∞", fb:"Ambos términos crecen, pero con el <b>mismo orden</b> (≈ 2x): su diferencia no explota, se estabiliza en 1/4."},
+     {t:"1/2", fb:"Ese valor surge al tomar el denominador del conjugado como 2x, olvidando el otro sumando: √(4x²+x) + 2x ≈ 2x + 2x = 4x, y x/4x = 1/4."}
+    ]},
+  { contexto:"«Segundo juicio: mis péndulos trigonométricos se cruzan en el origen…»",
+    mate:`${lim("x→0")} ${frac("tan(3x)","sen(2x)")} =`,
+    ops:[
+     {t:"3/2", ok:true, fb:"<b>Correcto.</b> tan(3x)/sen(2x) = (sen 3x / cos 3x)·(1/sen 2x) = (sen3x/3x)·(2x/sen2x)·(3/2)·(1/cos3x) → 1·1·(3/2)·1 = 3/2."},
+     {t:"1", fb:"Aplicar los notables <b>sin compensar coeficientes</b> borra el 3 y el 2. Al normalizar cada notable, queda el factor 3/2."},
+     {t:"0", fb:"0/0 es indeterminación, no cero: los notables la resuelven y dan 3/2."},
+     {t:"2/3", fb:"Invertiste los coeficientes: el 3 acompaña al numerador (tan 3x) y el 2 al denominador (sen 2x); el cociente correcto es 3/2."}
+    ]},
+  { contexto:"«Último juicio, viajero: la diferencia de cubos guarda mi nombre…»",
+    mate:`${lim("x→1")} ${frac("x³ − 1","x − 1")} =`,
+    ops:[
+     {t:"3", ok:true, fb:"<b>Correcto.</b> x³ − 1 = (x − 1)(x² + x + 1). Al cancelar (x − 1), el límite es 1² + 1 + 1 = 3. (Es, además, la derivada de x³ en x = 1.)"},
+     {t:"0", fb:"0/0 no vale 0: factoriza la diferencia de cubos y cancela. El resultado es 3."},
+     {t:"1", fb:"Ese valor viene de cancelar mal (como si x³−1 entre x−1 fuera x²·… evaluado sin el trinomio completo). El cociente exacto es x² + x + 1 → 3."},
+     {t:"No existe", fb:"La discontinuidad en x = 1 es removible: tras factorizar, el límite existe y vale 3."}
+    ]}
+ ]
+};
+
+/* ---------- estado ---------- */
+const S = {
+  cordura:100, almas:0, aciertos:0, errores:0,
+  cripta:-1, sello:0, enBoss:false, respondido:false,
+  desbloqueada:0 // índice de la próxima cripta disponible
+};
+
+/* ---------- referencias DOM ---------- */
+const $ = (id)=>document.getElementById(id);
+const campo=$("campo"), hud=$("hud"), autorMapa=$("autorMapa");
+const reto=$("reto"), retoTitulo=$("retoTitulo"), retoSello=$("retoSello"),
+      retoContexto=$("retoContexto"), retoMate=$("retoMate"),
+      retoOpciones=$("retoOpciones"), veredicto=$("veredicto"),
+      progresoSellos=$("progresoSellos"), btnSeguir=$("btnSeguir"), btnHuir=$("btnHuir");
+
+/* ---------- construir barrotes de la reja ---------- */
+(()=>{ let s=""; for(let x=10;x<1200;x+=34){
+  s+=`<line x1="${x}" y1="10" x2="${x}" y2="96"/>`;
+  s+=`<circle cx="${x}" cy="10" r="4" fill="#101a2c" stroke="none"/>`;
+} $("barrotes").innerHTML=s; })();
+
+/* ---------- construir el campo de criptas ---------- */
+function pintarCampo(){
+  campo.innerHTML="";
+  CRIPTAS.forEach((c,i)=>{
+    const d=document.createElement("div");
+    d.className="tumba";
+    const liberada = i < S.desbloqueada && marcaLiberada[i];
+    if(marcaLiberada[i]) d.classList.add("liberada");
+    else if(i>S.desbloqueada) d.classList.add("bloqueada");
+    else d.classList.add("abierta");
+    d.innerHTML=`<span class="alma">👻</span>
+      <span class="num">CRIPTA ${["I","II","III","IV","V","VI"][i]}</span>
+      <span class="nom">${c.nombre}</span>
+      <span class="estado">${marcaLiberada[i]?"Alma liberada":(i>S.desbloqueada?"Sellada":c.tema)}</span>`;
+    d.onclick=()=>{ if(i===S.desbloqueada && !marcaLiberada[i]) abrirCripta(i);
+                    else if(i>S.desbloqueada) audio.sfxBloqueo(); };
+    campo.appendChild(d);
+  });
+  const m=document.createElement("div");
+  m.className="tumba"; m.id="mausoleo";
+  const listo = S.almas>=6;
+  m.classList.add(listo && !bossVencido ? "abierta" : "bloqueada");
+  if(bossVencido) m.classList.add("liberada");
+  m.innerHTML=`<span class="num">RETO FINAL</span>
+    <span class="nom">Mausoleo del Infinito</span>
+    <span class="estado">${bossVencido?"Guardián vencido":(listo?"El Guardián te espera…":"Libera las 6 almas")}</span>`;
+  m.onclick=()=>{ if(listo && !bossVencido) abrirBoss(); else if(!listo) audio.sfxBloqueo(); };
+  campo.appendChild(m);
+}
+let marcaLiberada=[false,false,false,false,false,false];
+let bossVencido=false;
+
+/* ---------- flujo de retos ---------- */
+function abrirCripta(i){
+  S.cripta=i; S.sello=0; S.enBoss=false;
+  audio.sfxPuerta();
+  mostrarSello();
+  reto.classList.add("activo");
+}
+function abrirBoss(){
+  S.enBoss=true; S.sello=0;
+  audio.sfxCampana(2);
+  mostrarSello();
+  reto.classList.add("activo");
+}
+function fuente(){ return S.enBoss? GUARDIAN : CRIPTAS[S.cripta]; }
+
+function mostrarSello(){
+  const f=fuente(), q=f.preguntas[S.sello];
+  S.respondido=false;
+  retoTitulo.textContent = f.nombre;
+  retoSello.textContent = S.enBoss? `Juicio ${S.sello+1} de ${f.preguntas.length}` : `Sello ${S.sello+1} de ${f.preguntas.length}`;
+  retoContexto.textContent = q.contexto;
+  retoMate.innerHTML = q.mate;
+  veredicto.className="veredicto"; veredicto.innerHTML="";
+  btnSeguir.style.display="none"; btnHuir.style.display=S.enBoss?"none":"inline-block";
+  progresoSellos.textContent = f.tema;
+  const ops=[...q.ops].map((o,idx)=>({...o,idx})).sort(()=>Math.random()-.5);
+  retoOpciones.innerHTML="";
+  ops.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="opc"; b.innerHTML=o.t;
+    b.onclick=()=>responder(b,o);
+    retoOpciones.appendChild(b);
+  });
+}
+
+function responder(btn,op){
+  if(S.respondido) return;
+  S.respondido=true;
+  [...retoOpciones.children].forEach(b=>b.disabled=true);
+  if(op.ok){
+    S.aciertos++;
+    btn.classList.add("ok");
+    veredicto.className="veredicto ok"; veredicto.innerHTML="✦ "+op.fb;
+    audio.sfxAcierto();
+  }else{
+    S.errores++;
+    btn.classList.add("mal");
+    // resaltar la correcta
+    [...retoOpciones.children].forEach((b,i)=>{ if(b.innerHTML===encontrarCorrecta().t) b.classList.add("ok"); });
+    veredicto.className="veredicto mal"; veredicto.innerHTML="☠ "+op.fb;
+    danio(S.enBoss?20:15);
+    if(S.cordura<=0) return; // muerte ya gestionada
+  }
+  btnSeguir.style.display="inline-block";
+}
+function encontrarCorrecta(){ return fuente().preguntas[S.sello].ops.find(o=>o.ok); }
+
+btnSeguir.onclick=()=>{
+  const f=fuente();
+  if(S.sello < f.preguntas.length-1){ S.sello++; mostrarSello(); return; }
+  // cripta o boss completados
+  reto.classList.remove("activo");
+  if(S.enBoss){ bossVencido=true; audio.sfxCampana(3); setTimeout(finalizar,900); }
+  else{
+    marcaLiberada[S.cripta]=true; S.almas++; S.desbloqueada=Math.min(6,S.desbloqueada+1);
+    audio.sfxCampana(1); audio.sfxAlma();
+    actualizarHUD(); pintarCampo();
+  }
+};
+btnHuir.onclick=()=>{ reto.classList.remove("activo"); };
+
+/* ---------- daño, HUD, muerte ---------- */
+function danio(n){
+  S.cordura=Math.max(0,S.cordura-n);
+  actualizarHUD();
+  document.body.classList.remove("golpe"); void document.body.offsetWidth;
+  document.body.classList.add("golpe");
+  const d=$("danio"); d.style.opacity=1; setTimeout(()=>d.style.opacity=0,550);
+  audio.sfxError(); relampago(true);
+  if(S.cordura<=0){ setTimeout(morir,700); }
+}
+function actualizarHUD(){
+  $("barraCordura").style.width=S.cordura+"%";
+  $("almasHud").textContent=`✦ Almas liberadas: ${S.almas} / 6`;
+}
+function morir(){
+  reto.classList.remove("activo");
+  $("mAciertos").textContent=S.aciertos;
+  $("mErrores").textContent=S.errores;
+  $("mAlmas").textContent=S.almas;
+  $("muerte").classList.remove("oculto");
+  audio.sfxMuerte();
+}
+$("btnRevivir").onclick=()=>{ $("muerte").classList.add("oculto"); reiniciar(); };
+$("btnOtraVez").onclick=()=>{ $("final").classList.add("oculto"); reiniciar(); };
+function reiniciar(){
+  S.cordura=100;S.almas=0;S.aciertos=0;S.errores=0;S.desbloqueada=0;
+  marcaLiberada=[false,false,false,false,false,false]; bossVencido=false;
+  actualizarHUD(); pintarCampo();
+}
+
+/* ---------- final ---------- */
+function finalizar(){
+  $("fAciertos").textContent=S.aciertos;
+  $("fErrores").textContent=S.errores;
+  $("fCordura").textContent=S.cordura+"%";
+  let rango,msg;
+  if(S.errores===0){ rango="⚜ Maestro de los Límites";
+    msg="Impecable: interpretaste cada forma, formulaste la estrategia exacta (sustitución, laterales, conjugado, notables, comparación de grados) y argumentaste sin fisuras. El infinito ya no te asusta."; }
+  else if(S.cordura>=55){ rango="🕯 Cazador de Espectros";
+    msg="Dominaste el cementerio con algunas heridas. Relee la retroalimentación de tus errores: cada distractor que elegiste señala una confusión concreta que puedes desterrar antes de la evaluación."; }
+  else{ rango="🌫 Superviviente de la Niebla";
+    msg="Saliste con vida, pero la niebla casi te consume. Vuelve a recorrer las criptas donde fallaste y apóyate en el Grimorio: la indeterminación se vence con técnica, no con intuición."; }
+  $("rangoFinal").textContent=rango;
+  $("mensajeFinal").textContent=msg;
+  $("final").classList.remove("oculto");
+}
+
+/* =========================================================
+   AMBIENTE: lluvia, relámpagos, murciélagos
+   ========================================================= */
+const canvas=$("lluvia"), ctx=canvas.getContext("2d");
+let gotas=[];
+function dimensionar(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+addEventListener("resize",dimensionar); dimensionar();
+function crearGotas(){
+  gotas=[]; const n=Math.min(240,Math.floor(innerWidth/6));
+  for(let i=0;i<n;i++) gotas.push({
+    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    l:10+Math.random()*18, v:9+Math.random()*9, o:.12+Math.random()*.22, dx:1.4+Math.random()});
+}
+crearGotas(); addEventListener("resize",crearGotas);
+const reducirMov = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function animarLluvia(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!reducirMov){
+    ctx.lineCap="round";
+    for(const g of gotas){
+      ctx.strokeStyle=`rgba(174,194,224,${g.o})`;
+      ctx.lineWidth=1.1;
+      ctx.beginPath(); ctx.moveTo(g.x,g.y); ctx.lineTo(g.x-g.dx*2,g.y+g.l); ctx.stroke();
+      g.x-=g.dx; g.y+=g.v;
+      if(g.y>canvas.height){ g.y=-20; g.x=Math.random()*(canvas.width+80); }
+    }
+  }
+  requestAnimationFrame(animarLluvia);
+}
+animarLluvia();
+
+function relampago(forzado){
+  const f=$("flash");
+  const doble=Math.random()<.5;
+  f.style.opacity=.85; setTimeout(()=>f.style.opacity=0,90);
+  if(doble){ setTimeout(()=>{f.style.opacity=.6; setTimeout(()=>f.style.opacity=0,70);},180); }
+  const retardo=forzado?120:300+Math.random()*900;
+  setTimeout(()=>audio.sfxTrueno(forzado?1:.5+Math.random()*.5),retardo);
+}
+function cicloRelampagos(){
+  setTimeout(()=>{ if(juegoIniciado) relampago(false); cicloRelampagos(); }, 9000+Math.random()*14000);
+}
+function soltarBat(){
+  if(!juegoIniciado || reducirMov) { setTimeout(soltarBat, 6000); return; }
+  const b=document.createElement("div");
+  b.className="bat";
+  b.style.top=(8+Math.random()*28)+"%";
+  b.style.animationDuration=(9+Math.random()*8)+"s";
+  b.innerHTML=`<svg viewBox="0 0 34 16"><path d="M17 6 C13 0 8 0 4 3 C7 4 8 6 8 8 C10 6 13 7 14 10 L17 8 L20 10 C21 7 24 6 26 8 C26 6 27 4 30 3 C26 0 21 0 17 6 Z" fill="#0a0f1c"/></svg>`;
+  document.getElementById("escena").appendChild(b);
+  setTimeout(()=>b.remove(),18000);
+  setTimeout(soltarBat, 7000+Math.random()*16000);
+}
+
+/* =========================================================
+   AUDIO DE TERROR (Web Audio API)
+   ========================================================= */
+const audio=(()=>{
+  let ac=null, master=null, silencio=false, listo=false;
+  function init(){
+    if(listo) return;
+    ac=new (window.AudioContext||window.webkitAudioContext)();
+    master=ac.createGain(); master.gain.value=.9; master.connect(ac.destination);
+    // ---- viento: ruido filtrado con LFO ----
+    const buf=ac.createBuffer(1,ac.sampleRate*3,ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+    const ruido=ac.createBufferSource(); ruido.buffer=buf; ruido.loop=true;
+    const fil=ac.createBiquadFilter(); fil.type="bandpass"; fil.frequency.value=380; fil.Q.value=.8;
+    const gV=ac.createGain(); gV.gain.value=.05;
+    const lfo=ac.createOscillator(); lfo.frequency.value=.07;
+    const lfoG=ac.createGain(); lfoG.gain.value=220;
+    lfo.connect(lfoG); lfoG.connect(fil.frequency);
+    const lfo2=ac.createOscillator(); lfo2.frequency.value=.11;
+    const lfo2G=ac.createGain(); lfo2G.gain.value=.03;
+    lfo2.connect(lfo2G); lfo2G.connect(gV.gain);
+    ruido.connect(fil); fil.connect(gV); gV.connect(master);
+    ruido.start(); lfo.start(); lfo2.start();
+    guardarRuido=buf;
+    // ---- drone grave desafinado ----
+    const g=ac.createGain(); g.gain.value=.05; g.connect(master);
+    [55,55.7,110.4].forEach((f,i)=>{
+      const o=ac.createOscillator(); o.type=i<2?"sine":"triangle"; o.frequency.value=f;
+      const go=ac.createGain(); go.gain.value=i<2?.5:.18;
+      o.connect(go); go.connect(g); o.start();
+    });
+    const trem=ac.createOscillator(); trem.frequency.value=.05;
+    const tremG=ac.createGain(); tremG.gain.value=.02;
+    trem.connect(tremG); tremG.connect(g.gain); trem.start();
+    listo=true;
+  }
+  let guardarRuido=null;
+  const t=()=>ac.currentTime;
+  function env(g,a,peak,dur){ g.gain.cancelScheduledValues(t());
+    g.gain.setValueAtTime(0.0001,t()); g.gain.exponentialRampToValueAtTime(peak,t()+a);
+    g.gain.exponentialRampToValueAtTime(0.0001,t()+dur); }
+  function sfxTrueno(fuerza=1){ if(!listo||silencio) return;
+    const s=ac.createBufferSource(); s.buffer=guardarRuido; s.loop=false;
+    const f=ac.createBiquadFilter(); f.type="lowpass";
+    f.frequency.setValueAtTime(900,t()); f.frequency.exponentialRampToValueAtTime(60,t()+2.4);
+    const g=ac.createGain(); env(g,.02,.55*fuerza,2.6);
+    s.connect(f); f.connect(g); g.connect(master); s.start(); s.stop(t()+2.8); }
+  function tono(freq,dur,tipo="sine",vol=.2,delay=0){ if(!listo||silencio) return;
+    const o=ac.createOscillator(); o.type=tipo; o.frequency.setValueAtTime(freq,t()+delay);
+    const g=ac.createGain(); g.gain.setValueAtTime(0.0001,t()+delay);
+    g.gain.exponentialRampToValueAtTime(vol,t()+delay+.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,t()+delay+dur);
+    o.connect(g); g.connect(master); o.start(t()+delay); o.stop(t()+delay+dur+.1); }
+  function sfxAcierto(){ // arpegio menor etéreo
+    [329.6,392,493.9,659.2].forEach((f,i)=>tono(f,.9,"sine",.12,i*.09)); }
+  function sfxError(){ if(!listo||silencio) return;
+    [92,98,123].forEach(f=>tono(f,.7,"sawtooth",.1));
+    const s=ac.createBufferSource(); s.buffer=guardarRuido;
+    const f=ac.createBiquadFilter(); f.type="lowpass"; f.frequency.value=300;
+    const g=ac.createGain(); env(g,.01,.3,.5);
+    s.connect(f); f.connect(g); g.connect(master); s.start(); s.stop(t()+.6); }
+  function sfxCampana(n=1){ for(let i=0;i<n;i++){
+      tono(196,2.4,"sine",.16,i*1.1); tono(392.5,1.6,"sine",.06,i*1.1); tono(587,.9,"sine",.03,i*1.1);} }
+  function sfxAlma(){ if(!listo||silencio) return;
+    const o=ac.createOscillator(); o.type="sine";
+    o.frequency.setValueAtTime(440,t()); o.frequency.exponentialRampToValueAtTime(1320,t()+1.4);
+    const g=ac.createGain(); env(g,.05,.09,1.6);
+    o.connect(g); g.connect(master); o.start(); o.stop(t()+1.8); }
+  function sfxPuerta(){ if(!listo||silencio) return;
+    const o=ac.createOscillator(); o.type="sawtooth";
+    o.frequency.setValueAtTime(70,t()); o.frequency.linearRampToValueAtTime(52,t()+.9);
+    const f=ac.createBiquadFilter(); f.type="lowpass"; f.frequency.value=260;
+    const g=ac.createGain(); env(g,.05,.14,1.0);
+    o.connect(f); f.connect(g); g.connect(master); o.start(); o.stop(t()+1.1); }
+  function sfxBloqueo(){ tono(110,.25,"square",.08); tono(104,.25,"square",.08,.12); }
+  function sfxMuerte(){ if(!listo||silencio) return;
+    [220,207,196,185,175].forEach((f,i)=>tono(f,.8,"triangle",.12,i*.35));
+    setTimeout(()=>sfxTrueno(1),400); }
+  function alternar(){ silencio=!silencio;
+    if(master) master.gain.value=silencio?0:.9; return silencio; }
+  return {init,sfxTrueno,sfxAcierto,sfxError,sfxCampana,sfxAlma,sfxPuerta,sfxBloqueo,sfxMuerte,alternar};
+})();
+
+/* ---------- arranque ---------- */
+let juegoIniciado=false;
+$("btnEntrar").onclick=()=>{
+  audio.init();
+  $("intro").classList.add("oculto");
+  hud.classList.remove("oculto");
+  autorMapa.classList.remove("oculto");
+  juegoIniciado=true;
+  actualizarHUD(); pintarCampo();
+  audio.sfxPuerta();
+  setTimeout(()=>relampago(true),700);
+  cicloRelampagos(); soltarBat();
+};
+$("btnSonido").onclick=(e)=>{ const s=audio.alternar(); e.target.textContent=s?"🔇 Silencio":"🔊 Sonido"; };
+$("btnGrimorio").onclick=()=>$("grimorio").classList.remove("oculto");
+$("btnCerrarGrimorio").onclick=()=>$("grimorio").classList.add("oculto");
+</script>
+</body>
+</html>
